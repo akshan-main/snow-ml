@@ -63,3 +63,58 @@ Whether a different precipitation product changes skill (not run). Why the trans
 ## What I'd do next
 
 Get Ex2's MLflow run IDs so finding 6 can be pinned down properly. Rerun the Tuolumne evaluation against ERA5 SWE as the target and see whether the timing/magnitude split holds when the target isn't PRISM-derived. Then the precipitation swap, with ERA5 as the independent target so the result is interpretable.
+
+## Follow-up: finding 5 re-tested against an independent target
+
+Finding 1 said UA SWE and ERA5-Land disagree on magnitude in a stable,
+basin-specific way, and that UA shares a PRISM ancestry with GRIDMET while
+ERA5 does not. Finding 5 was measured entirely against UA. So the obvious
+question is whether finding 5 survives when the reference target changes.
+
+I re-scored the same 22 Tuolumne basins and the same saved predictions
+against both targets, over the six water years where ERA5 and the
+predictions overlap (WY2016 to WY2021). Nothing was retrained. The only
+thing that changed is what the predictions are being compared to.
+
+| signature (median, 22 basins) | vs UA | vs ERA5 |
+|---|---|---|
+| peak SWE abs error, local | 14.5% | 20.9% |
+| peak SWE abs error, multi | 29.6% | 34.0% |
+| peak timing abs error, local | 8.75 d | 7.0 d |
+| peak timing abs error, multi | 9.50 d | 7.5 d |
+| melt-out abs error, local | 6.0 d | 12.0 d |
+| melt-out abs error, multi | 12.0 d | 10.75 d |
+
+Two parts of finding 5 hold and one does not.
+
+**Peak magnitude holds.** The local model beats the multi-HUC model on peak
+SWE error against either target (p<0.001 vs UA, p=0.0001 vs ERA5). The gap
+is similar in size. This is the part of finding 5 I'd now defend.
+
+**Peak timing holds, as a null.** No significant difference against either
+target (p=0.61 vs UA, p=0.99 vs ERA5). Both models get peak timing about
+equally right, and that conclusion does not depend on the reference.
+
+**Melt-out does not hold.** Against UA the local model looked clearly better
+(6.0 vs 12.0 days, p=0.0001). Against ERA5 the difference disappears
+(12.0 vs 10.75 days, p=0.42, and the sign flips).
+
+The mechanism is visible in the per-basin numbers. Switching the reference
+to ERA5 roughly doubles the local model's melt-out error (17 of 22 basins get
+worse) but barely moves the multi-HUC model's (11 of 22 get worse, 11 get
+better). The local models were trained on UA, so they reproduce UA's melt-out
+timing closely, including wherever UA and ERA5 disagree. That agreement was
+being scored as accuracy. The multi-HUC model, trained on different basins
+in a different region, has no such alignment and is roughly equidistant from
+both products.
+
+So the local model's melt-out advantage in finding 5 is at least partly
+target agreement rather than skill. I don't think it is entirely that, but I
+can't separate the two with these data, and the honest version of finding 5
+should drop the melt-out claim until there's a reference that neither model
+was trained on.
+
+This is the circularity problem from finding 1, showing up in a concrete
+measurement rather than as a caveat. It is also a reason to be careful with
+the planned precipitation comparison: if models are scored against a target
+one of them is effectively aligned to, the comparison measures alignment.
