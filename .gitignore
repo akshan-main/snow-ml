@@ -5,3 +5,4 @@ __pycache__/
 *.nc
 *.tif
 notebooks/Region17/Region17.ipynb
+data/
