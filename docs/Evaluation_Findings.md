@@ -32,6 +32,8 @@ I'm reporting this dead end on purpose. It has the same shape as the dry-day-rat
 
 Ex2 found elevation explains about a third of KGE variance. Ex3 found it stopped mattering once elevation was a feature. Both are right. Raw Spearman between elevation and KGE is +0.64. Partial out mean air temperature and it drops to +0.23. Inside Montane Forest basins it's +0.04. Colder basins are easier to model, and elevation was standing in for cold.
 
+It isn't the whole story everywhere. With temperature held fixed, elevation still carries +0.35 in Ephemeral basins and +0.16 in Maritime basins (p=0.05). So the "it's temperature" reading is solid for Montane Forest and only partial for the other two.
+
 **4. Signed error medians hide errors that alternate in sign.**
 
 When I first reported peak SWE bias for the locally trained Tuolumne models I got -3.6%, which looked nearly unbiased. The median absolute error is 13.8%. Year-to-year sign consistency is only 0.58 to 0.74 across the signatures, so a model that's 14% high one year and 14% low the next reports as unbiased. Switching to absolute error flipped one statistical verdict (melt rate bias went from not significant to significant at p=0.01). Both modules now report signed and absolute together.
@@ -46,7 +48,7 @@ Caveat that matters: 22 basins in one HUC08 aren't independent, so those p-value
 
 Across the 130 runs in the repo's MLflow dumps, the typical basin's KGE has an interquartile range of 0.13 (last epoch) or 0.08 (best epoch), and over 430 of 534 basins have a range above 0.30. The runs mix seeds and configurations, so I can't split that into seed noise vs bad runs without the MLflow parameters. Either way, one run per basin isn't stable enough to rank basins or compare them between experiments, which is what Ex2 and Ex3 do.
 
-One thing I had wrong and withdrew: I initially framed Ex2's numbers as one draw from this distribution. They aren't. Ex2's KGE values match none of the 130 runs; its runs aren't in the repo.
+One thing I had wrong and withdrew: I initially framed Ex2's numbers as one draw from this distribution. They aren't. Ex2's KGE value equals some run's value in only 1 basin of 534 (last step) or 2 (best step), each from a different run and only to the sixth decimal. That's about what chance predicts with this many runs, so Ex2's runs aren't in the repo.
 
 ## Things I checked that turned out fine
 
